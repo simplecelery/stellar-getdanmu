@@ -1,2 +1,2 @@
-# stellar-yszy
-恒星播放器的影视资源采集网插件
+# stellar-getdanmu
+恒星播放器的抓取在线弹幕附加到当前影片的插件

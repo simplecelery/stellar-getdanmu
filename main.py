@@ -77,9 +77,9 @@ class danmuplugin(StellarPlayer.IStellarPlayerPlugin):
         print(len(self.danmudata))
         if len(self.danmudata) > item:
             danmu_list =  self.danmudata[item]['data']['danmu']
-            self.player.showDanmu(True)
             print(danmu_list)
             self.player.batchAddDanmu(danmu_list)
+            self.player.showDanmu(True)
         
     def playMovieUrl(self,playpageurl):
         return
