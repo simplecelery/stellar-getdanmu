@@ -38,7 +38,7 @@ class danmuplugin(StellarPlayer.IStellarPlayerPlugin):
                 'width':1.0,
                 'height':30
             },
-            {'type':'label','name':'desc','textColor':'#ff7f00','fontSize':15,'value':'请输入bilibili、芒果tv、爱奇艺、腾讯视频、优酷的视频页面地址','height':40},
+            {'type':'label','name':'desc','textColor':'#ff7f00','fontSize':15,'value':'请输入bilibili、芒果tv、爱奇艺、腾讯视频的视频页面地址','height':40},
             {'type':'label','name':'list','textColor':'#557f55','fontSize':15,'value':'爬取的弹幕列表:','height':40},
             {'type':'grid','name':'danmugrid','itemlayout':danmu_layout,'value':self.danmudata,'itemheight':30,'itemwidth':775,'height':280,'width':1.0},
         ]
