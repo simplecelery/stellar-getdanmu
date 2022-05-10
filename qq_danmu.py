@@ -27,20 +27,16 @@ class qq_danmu():
         random.shuffle(jsonlist)
         jsonout = {'danmu_type':'qq','danmu':jsonlist}
         self.medianame = re.sub('[’!"#$%&\'()*+,-./:;<=>?@，。?★、…【】《》？“”‘’！[\\]^_`{|}~\s]+', "_", self.medianame)
-        #outfile = path + '\\qq_[' + self.medianame + ']_' + str(tid) + '.json'
-        #with open(outfile,"w", encoding='utf8') as f:
-        #    json.dump(jsonout,f,sort_keys=True, indent=4, separators=(',', ':'), ensure_ascii=False)
         danmudata.append({'title':self.medianame,'data':jsonout})
         return danmudata
 
     def get_vid(self):
-        #getting lid,cid,vid
         res = requests.get(self.url,verify=False)
         if res.status_code == 200:
             bs = bs4.BeautifulSoup(res.content.decode('UTF-8','ignore'),'html.parser')
             jsonstr = ''
             for item in bs.find_all('script'):
-                data = re.findall(r"var VIDEO_INFO = (.+)",item.text)
+                data = re.findall(r"var VIDEO_INFO = (.+)",str(item))
                 if len(data) > 0:
                     jsonstr = data[0]
                     break
@@ -54,7 +50,6 @@ class qq_danmu():
     def get_tid(self):
         #getting targetid
         vid = self.vid
-        print("getting targetid")
         url = 'https://access.video.qq.com/danmu_manage/regist?vappid=97767206&vsecret=c0bdcbae120669fff425d0ef853674614aa659c605a613a4&raw=1'
         headers = {
             'User-Agent':"PostmanRuntime/7.19.0",
