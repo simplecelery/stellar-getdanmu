@@ -14,22 +14,24 @@ class qq_danmu():
         self.medianame = ''
         requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
     
-    def get_danmu_by_url(self,path):
+    def get_danmu_by_url(self):
+        danmudata = []
         self.get_vid()
         if self.vid == '':
-            return ""
+            return danmudata
         tid = self.get_tid()
         if tid == '':
-            return ""
+            return danmudata
         jsonlist = []
         self.get_danmu(tid,jsonlist)
         random.shuffle(jsonlist)
         jsonout = {'danmu_type':'qq','danmu':jsonlist}
         self.medianame = re.sub('[’!"#$%&\'()*+,-./:;<=>?@，。?★、…【】《》？“”‘’！[\\]^_`{|}~\s]+', "_", self.medianame)
-        outfile = path + '\\qq_[' + self.medianame + ']_' + str(tid) + '.json'
-        with open(outfile,"w", encoding='utf8') as f:
-            json.dump(jsonout,f,sort_keys=True, indent=4, separators=(',', ':'), ensure_ascii=False)
-        return outfile
+        #outfile = path + '\\qq_[' + self.medianame + ']_' + str(tid) + '.json'
+        #with open(outfile,"w", encoding='utf8') as f:
+        #    json.dump(jsonout,f,sort_keys=True, indent=4, separators=(',', ':'), ensure_ascii=False)
+        danmudata.append({'title':self.medianame,'data':jsonout})
+        return danmudata
 
     def get_vid(self):
         #getting lid,cid,vid

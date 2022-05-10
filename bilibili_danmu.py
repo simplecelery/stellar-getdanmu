@@ -12,12 +12,16 @@ class bilibili_danmu(object):
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"
         }
         
-    def get_danmu_by_url(self,path):
+    def get_danmu_by_url(self):
         self.get_cid()
         if len(self.infos) == 0:
-            return
+            return None
+        danmudata = []
         for info in self.infos:
-            self.get_danmu(info,path)
+            name,arr = self.get_danmu(info)
+            if name != '' or arr != None:
+                danmudata.append({'title':name,'data':arr})
+        return danmudata
         
     def get_cid(self):
         m = re.search(r'(?<=av)\w+', self.url)
@@ -40,9 +44,11 @@ class bilibili_danmu(object):
         if  m:
             self.get_md_cid(m.group(0))
 
-    def get_danmu(self,info,path):
+    def get_danmu(self,info):
         danmu_url = "https://comment.bilibili.com/{}.xml".format(info['cid'])
         danmu_list = []
+        jsonout = None
+        medianame = ''
         res = requests.get(danmu_url, headers=self.headers)
         if res.status_code == 200:
             bs = bs4.BeautifulSoup(res.content.decode('UTF-8','ignore'),'html.parser')
@@ -57,11 +63,8 @@ class bilibili_danmu(object):
             random.shuffle(danmu_list)
             jsonout = {'danmu_type':'bilibili','danmu':danmu_list}
             info['medianame'] = re.sub('[’!"#$%&\'()*+,-./:;<=>?@，。?★、…【】《》？“”‘’！[\\]^_`{|}~\s]+', "_", info['medianame'])
-            outfile = path + '\\bili_[' + info['medianame'] + ']_' + str(info['cid']) + '.json'
-            with open(outfile,"w", encoding='utf8') as f:
-                json.dump(jsonout,f,sort_keys=True, indent=4, separators=(',', ':'), ensure_ascii=False)
-            return outfile
-        return ""
+            medianame = info['medianame']
+        return medianame,jsonout
 
     def get_av_cid(self,avid):
         searchurl = 'http://api.bilibili.com/x/web-interface/view?aid=' + avid
@@ -124,8 +127,3 @@ class bilibili_danmu(object):
         self.save(self.name, end)
         print("程序结束")
 
-
-if __name__ == '__main__':
-    u = input("请输入url:")
-    b = bilibili_danmu(u)
-    b.get_danmu_by_url('f:\\danmu')

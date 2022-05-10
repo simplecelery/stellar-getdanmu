@@ -33,19 +33,21 @@ class mgtv_danmu():
         self.cid = ''
         self.medianame = ''
 
-    def get_danmu_by_url(self,path):
+    def get_danmu_by_url(self):
         self.get_vinfos_by_url()
         danmlist = []
+        danmudata = []
         if self.vid == '':
-            return ""
+            return danmudata
         self.get_danmu_by_vid(danmlist)
         random.shuffle(danmlist)
         jsonout = {'danmu_type':'mgtv','danmu':danmlist}
         self.medianame = re.sub('[’!"#$%&\'()*+,-./:;<=>?@，。?★、…【】《》？“”‘’！[\\]^_`{|}~\s]+', "_", self.medianame)
-        outfile = path + '\\mgtv_[' + self.medianame + ']_' + str(self.vid) + '.json'
-        with open(outfile,"w", encoding='utf8') as f:
-            json.dump(jsonout,f,sort_keys=True, indent=4, separators=(',', ':'), ensure_ascii=False)
-        return outfile
+        #outfile = path + '\\mgtv_[' + self.medianame + ']_' + str(self.vid) + '.json'
+        #with open(outfile,"w", encoding='utf8') as f:
+        #    json.dump(jsonout,f,sort_keys=True, indent=4, separators=(',', ':'), ensure_ascii=False)
+        danmudata.append({'title':self.medianame,'data':jsonout})
+        return danmudata
     
     def get_danmu_by_vid(self, comments : list):
         api_url = "https://galaxy.bz.mgtv.com/rdbarrage"

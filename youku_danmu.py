@@ -58,24 +58,26 @@ class youku_danmu():
         self.duration = 0
         self.medianame = ''
 
-    def get_danmu_by_url(self,path):
+    def get_danmu_by_url(self):
+        danmudata = []
         cna = get_cna()
         danmlist = []
         if cna is None:
-            return ""
+            return danmudata
         self.vid,self.duration = self.get_vinfos_by_video_id()
         if self.vid is None:
-            return ""
+            return danmudata
         max_mat = self.duration // 60 + 1
         for mat in range(max_mat):
             result = self.get_danmu_by_mat(cna, mat + 1,danmlist)
         random.shuffle(danmlist)
         jsonout = {'danmu_type':'youku','danmu':danmlist}
         self.medianame = re.sub('[’!"#$%&\'()*+,-./:;<=>?@，。?★、…【】《》？“”‘’！[\\]^_`{|}~\s]+', "_", self.medianame)
-        outfile = path + '\\youku_[' + self.medianame + ']_' + str(self.vid) + '.json'
-        with open(outfile,"w", encoding='utf8') as f:
-            json.dump(jsonout,f,sort_keys=True, indent=4, separators=(',', ':'), ensure_ascii=False)
-        return outfile
+        #outfile = path + '\\youku_[' + self.medianame + ']_' + str(self.vid) + '.json'
+        #with open(outfile,"w", encoding='utf8') as f:
+        #    json.dump(jsonout,f,sort_keys=True, indent=4, separators=(',', ':'), ensure_ascii=False)
+        danmudata.append({'title':self.medianame,'data':jsonout})
+        return danmudata
         
     def get_vinfos_by_video_id(self):
         vid_patterns = ["[\s\S]+?youku.com/video/id_(/+?)\.html", "[\s\S]+?youku.com/v_show/id_(.+?)\.html"]

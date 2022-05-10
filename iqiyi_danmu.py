@@ -20,22 +20,30 @@ class iqiyi_danmu():
         self.channelId = ''
         self.duration = ''
 
-    def get_danmu_by_url(self,path):
+    def get_danmu_by_url(self):
         self.get_danmu_config()
+        print('1------------')
+        print(self.tvID)
+        danmudata = []
         if self.tvID == '':
-            print('未能提取到tvid')
-            return ""
+            return danmudata
         jsonlist = []
-        self.get_danmu(path,jsonlist)
+        self.get_danmu(jsonlist)
         random.shuffle(jsonlist)
         jsonout = {'danmu_type':'iqiyi','danmu':jsonlist}
         self.medianame = re.sub('[’!"#$%&\'()*+,-./:;<=>?@，。?★、…【】《》？“”‘’！[\\]^_`{|}~\s]+', "_", self.medianame)
-        outfile = path + '\\iqiyi_[' + self.medianame + ']_' + self.tvID + '.json'
-        with open(outfile,"w", encoding='utf8') as f:
-            json.dump(jsonout,f,sort_keys=True, indent=4, separators=(',', ':'), ensure_ascii=False)
-        return outfile
+        #outfile = path + '\\iqiyi_[' + self.medianame + ']_' + self.tvID + '.json'
+        #with open(outfile,"w", encoding='utf8') as f:
+        #    json.dump(jsonout,f,sort_keys=True, indent=4, separators=(',', ':'), ensure_ascii=False)
+        danmudata.append({'title':self.medianame,'data':jsonout})
+        return danmudata
 
     def get_danmu_config(self):
+        self.medianame = ''
+        self.tvID = ''
+        self.albumID = ''
+        self.channelId = ''
+        self.duration = ''
         r = requests.get(self.url)
         if r.status_code == 200:
             try:
@@ -45,14 +53,25 @@ class iqiyi_danmu():
                 self.channelId = re.findall(r"param\['channelID'\] = \"(\d+)\"",r.text)[0]
                 self.duration = re.findall(":video-info=[\s\S]+?\S+\"duration\":(\d+)",r.text)[0]
             except:
-                self.medianame = ''
-                self.tvID = ''
-                self.albumID = ''
-                self.channelId = ''
-                self.duration = ''
+                paramstr = re.findall("window.Q.PageInfo.playPageInfo=(.+?);",r.text)
+                if len(paramstr) > 0:
+                    jsonstr = paramstr[0]
+                    Jsondata = json.loads(jsonstr)
+                    if (Jsondata):
+                        self.medianame = Jsondata['name']
+                        self.tvID = str(Jsondata['tvId'])
+                        self.albumID = Jsondata['albumId']
+                        self.channelId = Jsondata['channelId']
+                        durationstr = Jsondata['duration']
+                        durationstrlist = durationstr.split(':')
+                        dorationval = 0
+                        for item in durationstrlist:
+                            val = int(item)
+                            dorationval = dorationval * 60 + val
+                        self.duration = str(dorationval)
         return
 
-    def get_danmu(self,path,jsonlist):
+    def get_danmu(self,jsonlist):
         ##getting danmu
         page = int(self.duration) // (60 * 5) + 1
         for i in range(1, page + 1):
@@ -102,8 +121,3 @@ class iqiyi_danmu():
                         ## !!!!fault in danmu_json
                         print('!!!!fault in danmu_json')
                         print(danmu_json)
-
-if __name__ == '__main__':
-    r = input('请输入爱奇艺网页地址：\n')
-    dm = iqiyi_danmu(r)
-    dm.get_danmu_by_url('f:\\py')
