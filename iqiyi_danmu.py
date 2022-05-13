@@ -95,28 +95,29 @@ class iqiyi_danmu():
                     danmu_json = {}
                     content_list = re.findall(">(\S*?)</",danmu)
                     try:
-                        #danmu_json["contentId"] = content_list[0] + '#'#'#'用于防止数字在csv中被省化
-                        danmu_json["msg"] = content_list[1]
-                        #danmu_json["parentId"] = content_list[2]
-                        danmu_json["tp"] = int(content_list[3]) * 1000
-                        #danmu_json["font"] = content_list[4]
-                        #danmu_json["color"] = content_list[5]
-                        #danmu_json["opacity"] = content_list[6]
-                        #danmu_json["position"] = content_list[7]
-                        #danmu_json["background"] = content_list[8]
-                        #danmu_json["contentType"] = content_list[9]
-                        #danmu_json["isReply"] = content_list[10]
-                        #danmu_json["likeCount"] = content_list[11]
-                        #danmu_json["plusCount"] = content_list[12]
-                        #danmu_json["dissCount"] = content_list[13]
-                        #danmu_json["senderAvatar"] = content_list[14]
-                        #danmu_json["uid"] = content_list[15]
-                        #danmu_json["udid"] = content_list[16]
-                        #if len(content_list) > 17:
-                        #    danmu_json["name"] = content_list[17]
-                        #else:
-                        #    danmu_json["name"] = " "
-                        jsonlist.append(danmu_json)
+                        if content_list[1] != '0':
+                            #danmu_json["contentId"] = content_list[0] + '#'#'#'用于防止数字在csv中被省化
+                            danmu_json["msg"] = content_list[1]
+                            #danmu_json["parentId"] = content_list[2]
+                            danmu_json["tp"] = int(content_list[3]) * 1000
+                            #danmu_json["font"] = content_list[4]
+                            #danmu_json["color"] = content_list[5]
+                            #danmu_json["opacity"] = content_list[6]
+                            #danmu_json["position"] = content_list[7]
+                            #danmu_json["background"] = content_list[8]
+                            #danmu_json["contentType"] = content_list[9]
+                            #danmu_json["isReply"] = content_list[10]
+                            #danmu_json["likeCount"] = content_list[11]
+                            #danmu_json["plusCount"] = content_list[12]
+                            #danmu_json["dissCount"] = content_list[13]
+                            #danmu_json["senderAvatar"] = content_list[14]
+                            #danmu_json["uid"] = content_list[15]
+                            #danmu_json["udid"] = content_list[16]
+                            #if len(content_list) > 17:
+                            #    danmu_json["name"] = content_list[17]
+                            #else:
+                            #    danmu_json["name"] = " "
+                            jsonlist.append(danmu_json)
                     except:
                         ## !!!!fault in danmu_json
                         print('!!!!fault in danmu_json')
