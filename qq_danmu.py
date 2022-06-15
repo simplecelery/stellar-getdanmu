@@ -36,26 +36,29 @@ class qq_danmu():
             bs = bs4.BeautifulSoup(res.content.decode('UTF-8','ignore'),'html.parser')
             jsonstr = ''
             for item in bs.find_all('script'):
-                data = re.findall(r"var VIDEO_INFO = (.+)",str(item))
-                if len(data) > 0:
-                    jsonstr = data[0]
-                    jsondata = json.loads(jsonstr)
-                    self.vid = jsondata['vid']
-                    self.duration = int(jsondata['duration']) 
-                    self.medianame = jsondata['title']
-                    break
-                data = re.findall(r"window.__pinia=(.+)",item.text)
-                if len(data) > 0:
-                    tmp = data[0]
-                    sidx1 = tmp.find('"videoInfo":')
-                    sidx = tmp.find("{",sidx1)
-                    einx = tmp.find("}",sidx)
-                    infostr = tmp[sidx : einx + 1]
-                    jsondata = json.loads(infostr)
-                    self.vid = jsondata['vid']
-                    self.duration = 1000
-                    self.medianame = jsondata['title']
-                    break
+                try:
+                    data = re.findall(r"var VIDEO_INFO = (.+)",str(item))
+                    if len(data) > 0:
+                        jsonstr = data[0]
+                        jsondata = json.loads(jsonstr)
+                        self.vid = jsondata['vid']
+                        self.duration = int(jsondata['duration']) 
+                        self.medianame = jsondata['title']
+                        break
+                    data = re.findall(r"window.__pinia=(.+)",item.text)
+                    if len(data) > 0:
+                        tmp = data[0]
+                        sidx1 = tmp.find('"videoInfo":')
+                        sidx = tmp.find("{",sidx1)
+                        einx = tmp.find("}",sidx)
+                        infostr = tmp[sidx : einx + 1]
+                        jsondata = json.loads(infostr)
+                        self.vid = jsondata['vid']
+                        self.duration = 1000
+                        self.medianame = jsondata['title']
+                        break
+                except:
+                    self.vid = ""
             
     def get_tid(self):
         #getting targetid
