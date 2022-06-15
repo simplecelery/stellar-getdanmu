@@ -39,13 +39,23 @@ class qq_danmu():
                 data = re.findall(r"var VIDEO_INFO = (.+)",str(item))
                 if len(data) > 0:
                     jsonstr = data[0]
+                    jsondata = json.loads(jsonstr)
+                    self.vid = jsondata['vid']
+                    self.duration = int(jsondata['duration']) 
+                    self.medianame = jsondata['title']
                     break
-            if jsonstr == '':
-                return
-            jsondata = json.loads(jsonstr)
-            self.vid = jsondata['vid']
-            self.duration = int(jsondata['duration']) 
-            self.medianame = jsondata['title']
+                data = re.findall(r"window.__pinia=(.+)",item.text)
+                if len(data) > 0:
+                    tmp = data[0]
+                    sidx1 = tmp.find('"videoInfo":')
+                    sidx = tmp.find("{",sidx1)
+                    einx = tmp.find("}",sidx)
+                    infostr = tmp[sidx : einx + 1]
+                    jsondata = json.loads(infostr)
+                    self.vid = jsondata['vid']
+                    self.duration = 1000
+                    self.medianame = jsondata['title']
+                    break
             
     def get_tid(self):
         #getting targetid
