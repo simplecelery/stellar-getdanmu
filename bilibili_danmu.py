@@ -11,7 +11,7 @@ class bilibili_danmu(object):
         self.headers = {
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"
         }
-        
+
     def get_danmu_by_url(self):
         self.get_cid()
         if len(self.infos) == 0:
@@ -22,15 +22,17 @@ class bilibili_danmu(object):
             if name != '' or arr != None:
                 danmudata.append({'title':name,'data':arr})
         return danmudata
-        
+
     def get_cid(self):
+        p = re.search(r'(?<=p=)\d+', self.url)
+        p = int(p.group(0)) if p else 1
         m = re.search(r'(?<=av)\w+', self.url)
         if m:
-            self.get_av_cid(m.group(0))
+            self.get_av_cid(m.group(0),p)
             return
         m = re.search(r'(?<=BV)\w+', self.url)
         if m:
-            self.get_bv_cid(m.group(0))
+            self.get_bv_cid(m.group(0),p)
             return
         m = re.search(r'(?<=ep)\w+', self.url)
         if  m:
@@ -66,22 +68,22 @@ class bilibili_danmu(object):
             medianame = info['medianame']
         return medianame,jsonout
 
-    def get_av_cid(self,avid):
+    def get_av_cid(self,avid,p):
         searchurl = 'http://api.bilibili.com/x/web-interface/view?aid=' + avid
         res = requests.get(searchurl, headers=self.headers)
         if res.status_code == 200:
             jsondata = json.loads(res.text, strict = False)
             if jsondata and jsondata['code'] == 0:
-                self.infos.append({'medianame':jsondata['data']['title'],'cid':jsondata['data']['cid']})
-                
-    def get_bv_cid(self,bvid):
+                self.infos.append({'medianame':jsondata['data']['title'],'cid':jsondata['data']['pages'][p-1]['cid']})
+
+    def get_bv_cid(self,bvid,p):
         searchurl = 'https://api.bilibili.com/x/web-interface/view?bvid=BV' + bvid
         res = requests.get(searchurl, headers=self.headers)
         if res.status_code == 200:
             jsondata = json.loads(res.text, strict = False)
             if jsondata and jsondata['code'] == 0:
-                self.infos.append({'medianame':jsondata['data']['title'],'cid':jsondata['data']['cid']})
-    
+                self.infos.append({'medianame':jsondata['data']['title'],'cid':jsondata['data']['pages'][p-1]['cid']})
+
     def get_ep_cid(self,epid):
         searchurl = 'http://api.bilibili.com/pgc/view/web/season?ep_id=' + str(epid)
         print(searchurl)
@@ -94,8 +96,8 @@ class bilibili_danmu(object):
                     n = re.search(r'(?<=bilibili.com/bangumi/play/ep)\w+', item["share_url"])
                     if n and n.group(0) == epid:
                         self.infos.append({'medianame':item['share_copy'],'cid':item['cid']})
-                        
-    
+
+
     def get_ss_cid(self,ssid):
         searchurl = 'http://api.bilibili.com/pgc/view/web/season?season_id=' + str(ssid)
         res = requests.get(searchurl, headers=self.headers)
@@ -127,3 +129,7 @@ class bilibili_danmu(object):
         self.save(self.name, end)
         print("程序结束")
 
+if __name__ == '__main__':
+    url = 'https://www.bilibili.com/video/BV17x411w7KC?p=3'
+    danmu = bilibili_danmu(url).get_danmu_by_url()
+    print(danmu)
