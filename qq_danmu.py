@@ -20,6 +20,7 @@ class qq_danmu():
         if self.vid == '':
             return danmudata
         tid = self.get_tid()
+        print(tid)
         if tid == '':
             return danmudata
         jsonlist = []
@@ -31,8 +32,11 @@ class qq_danmu():
         return danmudata
 
     def get_vid(self):
+        print(self.url)
         res = requests.get(self.url,verify=False)
-        if res.status_code == 200:
+        statuecode = res.status_code
+        print(statuecode)
+        if statuecode == 200:
             bs = bs4.BeautifulSoup(res.content.decode('UTF-8','ignore'),'html.parser')
             jsonstr = ''
             for item in bs.find_all('script'):
@@ -45,8 +49,9 @@ class qq_danmu():
                         self.duration = int(jsondata['duration']) 
                         self.medianame = jsondata['title']
                         break
-                    data = re.findall(r"window.__pinia=(.+)",item.text)
+                    data = re.findall(r"window.__pinia=(.+)",str(item))
                     if len(data) > 0:
+                        print("a---------")
                         tmp = data[0]
                         sidx1 = tmp.find('"videoInfo":')
                         sidx = tmp.find("{",sidx1)
@@ -63,6 +68,7 @@ class qq_danmu():
     def get_tid(self):
         #getting targetid
         vid = self.vid
+        print("getting targetid")
         url = 'https://access.video.qq.com/danmu_manage/regist?vappid=97767206&vsecret=c0bdcbae120669fff425d0ef853674614aa659c605a613a4&raw=1'
         headers = {
             'User-Agent':"PostmanRuntime/7.19.0",
@@ -96,6 +102,6 @@ class qq_danmu():
             
 
 if __name__ == '__main__':
-    r = input('请输入qq视频网页地址：\n')
-    dm = qq_danmu(r)
-    dm.get_danmu_by_url('f:\\py')
+    #r = input('请输入qq视频网页地址：\n')
+    dm = qq_danmu("https://v.qq.com/x/cover/mzc00200ccaqs78/y00429ym62l.html")
+    print(dm.get_danmu_by_url())
